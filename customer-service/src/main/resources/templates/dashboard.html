@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>Dashboard - HomeService Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="#">HomeService Pro</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link active" href="/dashboard">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/my-jobs">My Jobs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/book">Book Service</a></li>
+                </ul>
+                <span class="navbar-text text-white me-3" th:text="'Welcome, ' + ${username}">Welcome</span>
+                <form th:action="@{/logout}" method="post" class="d-flex">
+                    <button class="btn btn-light btn-sm" type="submit">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12 mb-4">
+                <h2>Available Services</h2>
+                <p>Browse our list of professional service providers.</p>
+            </div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            <div class="col" th:each="provider : ${providers}">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${provider.name}">Provider Name</h5>
+                        <h6 class="card-subtitle mb-2 text-muted" th:text="${provider.specialization}">Specialization
+                        </h6>
+                        <p class="card-text">
+                            <span th:if="${provider.available}" class="badge bg-success">Available</span>
+                            <span th:unless="${provider.available}" class="badge bg-secondary">Unavailable</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col" th:if="${#lists.isEmpty(providers)}">
+                <div class="alert alert-info">No providers currently available.</div>
+            </div>
+        </div>
+
+        <div class="mt-4 text-center">
+            <a href="/book" class="btn btn-lg btn-success">Book a Service Now</a>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
