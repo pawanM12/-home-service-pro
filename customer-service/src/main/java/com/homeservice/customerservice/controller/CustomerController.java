@@ -28,6 +28,11 @@ public class CustomerController {
     @Autowired
     private CustomerDetailsService customerDetailsService;
 
+    @GetMapping("/")
+    public String home() {
+        return "redirect:/dashboard";
+    }
+
     @GetMapping("/dashboard")
     public String dashboard(Model model, Authentication authentication) {
         // Customer specific dashboard

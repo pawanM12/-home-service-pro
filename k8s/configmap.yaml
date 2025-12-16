@@ -1,0 +1,164 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-repo
+data:
+  customer-service.yml: |
+    server:
+      port: 8080
+      forward-headers-strategy: native
+    
+    spring:
+      datasource:
+        url: jdbc:h2:mem:customerdb;DB_CLOSE_DELAY=-1
+        driverClassName: org.h2.Driver
+        username: sa
+        password: password
+      jpa:
+        database-platform: org.hibernate.dialect.H2Dialect
+        hibernate:
+          ddl-auto: update
+        show-sql: true
+      h2:
+        console:
+          enabled: true
+          path: /h2-console
+      thymeleaf:
+        cache: false
+    
+    eureka:
+      instance:
+        prefer-ip-address: true
+      client:
+        service-url:
+          defaultZone: http://eureka-server:8761/eureka/
+
+  gateway-service.yml: |
+    server:
+      port: 8080
+    
+    spring:
+      cloud:
+        gateway:
+          default-filters:
+            - PreserveHostHeader
+          routes:
+            - id: customer-api
+              uri: lb://customer-service
+              predicates:
+                - Path=/api/customer/**
+            - id: customer-login
+              uri: lb://customer-service
+              predicates:
+                - Path=/login
+            - id: customer-register
+              uri: lb://customer-service
+              predicates:
+                - Path=/register
+            - id: customer-logout
+              uri: lb://customer-service
+              predicates:
+                - Path=/logout
+            - id: customer-static-css
+              uri: lb://customer-service
+              predicates:
+                - Path=/css/**
+            - id: customer-static-js
+              uri: lb://customer-service
+              predicates:
+                - Path=/js/**
+            - id: customer-root
+              uri: lb://customer-service
+              predicates:
+                - Path=/
+            - id: customer-dashboard
+              uri: lb://customer-service
+              predicates:
+                - Path=/dashboard
+            - id: customer-book
+              uri: lb://customer-service
+              predicates:
+                - Path=/book
+            - id: customer-jobs
+              uri: lb://customer-service
+              predicates:
+                - Path=/my-jobs
+            - id: provider-api
+              uri: lb://serviceprovider-service
+              predicates:
+                - Path=/api/provider/**
+            - id: provider-web
+              uri: lb://serviceprovider-service
+              predicates:
+                - Path=/provider/**
+            - id: job-api
+              uri: lb://job-service
+              predicates:
+                - Path=/api/job/**
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+    
+    eureka:
+      instance:
+        prefer-ip-address: true
+      client:
+        service-url:
+          defaultZone: http://eureka-server:8761/eureka/
+
+  job-service.yml: |
+    server:
+      port: 8082
+    
+    spring:
+      datasource:
+        url: jdbc:h2:mem:jobdb
+        driverClassName: org.h2.Driver
+        username: sa
+        password: password
+      jpa:
+        database-platform: org.hibernate.dialect.H2Dialect
+        hibernate:
+          ddl-auto: update
+        show-sql: true
+      h2:
+        console:
+          enabled: true
+          path: /h2-console
+    
+    eureka:
+      instance:
+        prefer-ip-address: true
+      client:
+        service-url:
+          defaultZone: http://eureka-server:8761/eureka/
+
+  serviceprovider-service.yml: |
+    server:
+      port: 8081
+    
+    spring:
+      datasource:
+        url: jdbc:h2:mem:providerdb
+        driverClassName: org.h2.Driver
+        username: sa
+        password: password
+      jpa:
+        database-platform: org.hibernate.dialect.H2Dialect
+        hibernate:
+          ddl-auto: update
+        show-sql: true
+      h2:
+        console:
+          enabled: true
+          path: /h2-console
+      thymeleaf:
+        cache: false
+    
+    eureka:
+      instance:
+        prefer-ip-address: true
+      client:
+        service-url:
+          defaultZone: http://eureka-server:8761/eureka/
