@@ -39,9 +39,10 @@
                     <div class="card-icon mx-auto">
                         <!-- Smart Icon Logic -->
                         <i class="fa-solid fa-3x"
-                            th:classappend="${#strings.containsIgnoreCase(provider.specialization, 'Clean') ? 'fa-broom' : 
+                            th:classappend="${provider.specialization == null ? 'fa-user' : 
+                                           (#strings.containsIgnoreCase(provider.specialization, 'Clean') ? 'fa-broom' : 
                                            (#strings.containsIgnoreCase(provider.specialization, 'Electric') ? 'fa-bolt' : 
-                                           (#strings.containsIgnoreCase(provider.specialization, 'Plumb') ? 'fa-faucet' : 'fa-screwdriver-wrench'))}"></i>
+                                           (#strings.containsIgnoreCase(provider.specialization, 'Plumb') ? 'fa-faucet' : 'fa-screwdriver-wrench')))}"></i>
                     </div>
                     <h5 class="card-title fw-bold mt-3" th:text="${provider.specialization}">Service</h5>
                     <p class="text-secondary small mb-4">

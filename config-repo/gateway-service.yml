@@ -50,7 +50,7 @@ spring:
         - id: provider-api
           uri: lb://serviceprovider-service
           predicates:
-            - Path=/api/provider/**
+            - Path=/api/providers/**
         - id: provider-web
           uri: lb://serviceprovider-service
           predicates:
@@ -58,7 +58,7 @@ spring:
         - id: job-api
           uri: lb://job-service
           predicates:
-            - Path=/api/job/**
+            - Path=/api/jobs/**
       discovery:
         locator:
           enabled: true
