@@ -1,0 +1,72 @@
+server:
+  port: 8080
+
+spring:
+  cloud:
+    gateway:
+      default-filters:
+        - PreserveHostHeader
+      routes:
+        - id: customer-api
+          uri: lb://customer-service
+          predicates:
+            - Path=/api/customer/**
+        - id: customer-login
+          uri: lb://customer-service
+          predicates:
+            - Path=/login
+        - id: customer-register
+          uri: lb://customer-service
+          predicates:
+            - Path=/register
+        - id: customer-logout
+          uri: lb://customer-service
+          predicates:
+            - Path=/logout
+        - id: customer-static-css
+          uri: lb://customer-service
+          predicates:
+            - Path=/css/**
+        - id: customer-static-js
+          uri: lb://customer-service
+          predicates:
+            - Path=/js/**
+        - id: customer-root
+          uri: lb://customer-service
+          predicates:
+            - Path=/
+        - id: customer-dashboard
+          uri: lb://customer-service
+          predicates:
+            - Path=/dashboard
+        - id: customer-book
+          uri: lb://customer-service
+          predicates:
+            - Path=/book
+        - id: customer-jobs
+          uri: lb://customer-service
+          predicates:
+            - Path=/my-jobs
+        - id: provider-api
+          uri: lb://serviceprovider-service
+          predicates:
+            - Path=/api/provider/**
+        - id: provider-web
+          uri: lb://serviceprovider-service
+          predicates:
+            - Path=/provider/**
+        - id: job-api
+          uri: lb://job-service
+          predicates:
+            - Path=/api/job/**
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/

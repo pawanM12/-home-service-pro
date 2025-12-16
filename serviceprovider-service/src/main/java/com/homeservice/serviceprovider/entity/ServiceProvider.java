@@ -15,14 +15,20 @@ public class ServiceProvider {
     private String email;
     private boolean available;
 
+    private String password;
+    private String role;
+
     public ServiceProvider() {
     }
 
-    public ServiceProvider(String name, String specialization, String email, boolean available) {
+    public ServiceProvider(String name, String specialization, String email, boolean available, String password,
+            String role) {
         this.name = name;
         this.specialization = specialization;
         this.email = email;
         this.available = available;
+        this.password = password;
+        this.role = role;
     }
 
     public Long getId() {
@@ -63,5 +69,21 @@ public class ServiceProvider {
 
     public void setAvailable(boolean available) {
         this.available = available;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

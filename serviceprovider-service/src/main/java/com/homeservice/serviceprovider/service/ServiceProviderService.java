@@ -27,4 +27,14 @@ public class ServiceProviderService {
     public List<ServiceProvider> getProvidersBySpecialization(String specialization) {
         return repository.findBySpecialization(specialization);
     }
+
+    public ServiceProvider authenticate(String email, String password) {
+        return repository.findByEmail(email)
+                .filter(provider -> provider.getPassword() != null && provider.getPassword().equals(password))
+                .orElse(null);
+    }
+
+    public ServiceProvider getProviderByEmail(String email) {
+        return repository.findByEmail(email).orElse(null);
+    }
 }

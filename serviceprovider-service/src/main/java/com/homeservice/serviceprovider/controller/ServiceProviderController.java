@@ -33,4 +33,17 @@ public class ServiceProviderController {
     public List<ServiceProvider> getProvidersBySpecialization(@PathVariable String specialization) {
         return service.getProvidersBySpecialization(specialization);
     }
+
+    @PostMapping("/login")
+    public ServiceProvider login(@RequestBody LoginRequest loginRequest) {
+        return service.authenticate(loginRequest.email(), loginRequest.password());
+    }
+
+    @GetMapping("/email/{email}")
+    public ServiceProvider getProviderByEmail(@PathVariable String email) {
+        return service.getProviderByEmail(email);
+    }
+
+    public record LoginRequest(String email, String password) {
+    }
 }

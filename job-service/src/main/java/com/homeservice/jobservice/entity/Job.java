@@ -57,11 +57,30 @@ public class Job {
         this.status = status;
     }
 
+    private String description;
+    private String location;
+
     public LocalDateTime getScheduledTime() {
         return scheduledTime;
     }
 
     public void setScheduledTime(LocalDateTime scheduledTime) {
         this.scheduledTime = scheduledTime;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }

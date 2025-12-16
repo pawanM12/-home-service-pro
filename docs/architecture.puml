@@ -1,0 +1,44 @@
+@startuml
+skinparam componentStyle uml2
+skinparam backgroundColor #FFFFFF
+
+package "Infrastructure" {
+    [Config Server] as Config
+    [Eureka Server] as Discovery
+    [API Gateway] as Gateway
+}
+
+package "Core Microservices" {
+    [Customer Service] as Customer
+    [Provider Service] as Provider
+    [Job Service] as Job
+}
+
+database "Customer DB" as DB1
+database "Provider DB" as DB2
+database "Job DB" as DB3
+
+[Browser/Client] --> Gateway : HTTP Request\n(:8080)
+
+Gateway --> Customer : Route /customer/**
+Gateway --> Provider : Route /provider/**
+Gateway --> Job : Route /api/job/**
+
+Customer --> Job : REST /book (Feign)
+Provider --> Job : REST /accept (Feign)
+
+Customer ..> DB1 : Read/Write
+Provider ..> DB2 : Read/Write
+Job ..> DB3 : Read/Write
+
+Customer ..> Discovery : Register/Find
+Provider ..> Discovery : Register/Find
+Job ..> Discovery : Register/Find
+Gateway ..> Discovery : Find Routes
+
+Customer ..> Config : Pull Config
+Provider ..> Config : Pull Config
+Job ..> Config : Pull Config
+Gateway ..> Config : Pull Config
+
+@enduml

@@ -1,62 +1,75 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <title>Dashboard - HomeService Pro</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
+<head th:replace="~{fragments :: head('Dashboard - HomeService Pro')}"></head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
-        <div class="container">
-            <a class="navbar-brand" href="#">HomeService Pro</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link active" href="/dashboard">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/my-jobs">My Jobs</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/book">Book Service</a></li>
-                </ul>
-                <span class="navbar-text text-white me-3" th:text="'Welcome, ' + ${username}">Welcome</span>
-                <form th:action="@{/logout}" method="post" class="d-flex">
-                    <button class="btn btn-light btn-sm" type="submit">Logout</button>
-                </form>
+
+    <nav th:replace="~{fragments :: navbar}"></nav>
+
+    <!-- Hero Section -->
+    <header class="text-white text-center py-5 mb-5"
+        style="background: var(--primary-gradient); border-radius: 0 0 50px 50px; box-shadow: var(--shadow-lg);">
+        <div class="container py-4">
+            <h1 class="display-4 fw-bold mb-3 animate-fade-in">Find Your Expert</h1>
+            <p class="lead opacity-75 mb-4 animate-fade-in" style="animation-delay: 0.1s;">
+                Professional home services, booked instantly with confidence.
+            </p>
+            <a href="#services"
+                class="btn btn-light text-primary fw-bold px-5 py-3 shadow-md rounded-pill animate-fade-in"
+                style="animation-delay: 0.2s;">
+                Browse Services
+            </a>
+        </div>
+    </header>
+
+    <!-- Services Grid -->
+    <div class="container mb-5" id="services">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="fw-bold" style="color: var(--primary-color);">Available Providers</h3>
+            <div class="badge bg-light text-secondary border p-2">
+                <i class="fa-solid fa-location-dot me-1"></i> Area: Main Region
             </div>
         </div>
-    </nav>
 
-    <div class="container">
-        <div class="row">
-            <div class="col-12 mb-4">
-                <h2>Available Services</h2>
-                <p>Browse our list of professional service providers.</p>
-            </div>
-        </div>
+        <div class="row g-4">
+            <!-- Dynamic Providers -->
+            <div class="col-md-6 col-lg-4" th:each="provider : ${providers}">
+                <div class="premium-card h-100 p-4 text-center d-flex flex-column">
+                    <div class="card-icon mx-auto">
+                        <!-- Smart Icon Logic -->
+                        <i class="fa-solid fa-3x"
+                            th:classappend="${#strings.containsIgnoreCase(provider.specialization, 'Clean') ? 'fa-broom' : 
+                                           (#strings.containsIgnoreCase(provider.specialization, 'Electric') ? 'fa-bolt' : 
+                                           (#strings.containsIgnoreCase(provider.specialization, 'Plumb') ? 'fa-faucet' : 'fa-screwdriver-wrench'))}"></i>
+                    </div>
+                    <h5 class="card-title fw-bold mt-3" th:text="${provider.specialization}">Service</h5>
+                    <p class="text-secondary small mb-4">
+                        Provided by <strong th:text="${provider.name}">Provider Name</strong>
+                    </p>
 
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-            <div class="col" th:each="provider : ${providers}">
-                <div class="card h-100 shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title" th:text="${provider.name}">Provider Name</h5>
-                        <h6 class="card-subtitle mb-2 text-muted" th:text="${provider.specialization}">Specialization
-                        </h6>
-                        <p class="card-text">
-                            <span th:if="${provider.available}" class="badge bg-success">Available</span>
-                            <span th:unless="${provider.available}" class="badge bg-secondary">Unavailable</span>
-                        </p>
+                    <div class="mt-auto">
+                        <a th:href="@{/book(serviceType=${provider.specialization})}"
+                            class="btn btn-outline-primary w-100 fw-bold">
+                            Book Now <i class="fa-solid fa-calendar-plus ms-1"></i>
+                        </a>
                     </div>
                 </div>
             </div>
-            <div class="col" th:if="${#lists.isEmpty(providers)}">
-                <div class="alert alert-info">No providers currently available.</div>
-            </div>
-        </div>
 
-        <div class="mt-4 text-center">
-            <a href="/book" class="btn btn-lg btn-success">Book a Service Now</a>
+            <!-- Empty State -->
+            <div class="col-12 text-center py-5" th:if="${#lists.isEmpty(providers)}">
+                <div class="text-muted mb-3">
+                    <i class="fa-solid fa-magnifying-glass fa-3x"></i>
+                </div>
+                <h4 class="fw-bold text-secondary">No Providers Available</h4>
+                <p>Check back later or try a different search.</p>
+            </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <footer th:replace="~{fragments :: footer}"></footer>
+
 </body>
 
 </html>

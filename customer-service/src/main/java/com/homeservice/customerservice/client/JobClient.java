@@ -15,4 +15,11 @@ public interface JobClient {
 
     @GetMapping("/api/jobs/customer/{customerId}")
     List<Job> getJobsByCustomer(@PathVariable("customerId") Long customerId);
+
+    @GetMapping("/api/jobs/pending/{serviceType}")
+    List<Job> getPendingJobs(@PathVariable("serviceType") String serviceType);
+
+    @PostMapping("/api/jobs/{id}/accept")
+    Job acceptJob(@PathVariable("id") Long id,
+            @org.springframework.web.bind.annotation.RequestParam("providerId") Long providerId);
 }

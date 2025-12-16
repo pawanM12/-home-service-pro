@@ -1,41 +1,39 @@
 package com.homeservice.jobservice.service;
 
-import com.homeservice.jobservice.client.ServiceProviderClient;
 import com.homeservice.jobservice.entity.Job;
-import com.homeservice.jobservice.model.ServiceProvider;
 import com.homeservice.jobservice.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class JobService {
     @Autowired
     private JobRepository repository;
 
-    @Autowired
-    private ServiceProviderClient providerClient;
-
     public Job bookJob(Job job) {
-        job.setStatus("PENDING");
+        // Initial status is waiting for a provider to accept
+        job.setStatus("WAITING_FOR_PROVIDER");
 
-        // Find available providers
-        List<ServiceProvider> providers = providerClient.getProvidersBySpecialization(job.getServiceType());
+        // We no longer auto-assign. Providers must accept the job.
 
-        // Simple assignment logic: assign to first available provider
-        Optional<ServiceProvider> assignedProvider = providers.stream()
-                .filter(ServiceProvider::isAvailable)
-                .findFirst();
+        return repository.save(job);
+    }
 
-        if (assignedProvider.isPresent()) {
-            job.setProviderId(assignedProvider.get().getId());
-            job.setStatus("ASSIGNED");
-        } else {
-            job.setStatus("WAITING_FOR_PROVIDER");
+    public List<Job> getPendingJobs(String serviceType) {
+        return repository.findByServiceTypeAndStatus(serviceType, "WAITING_FOR_PROVIDER");
+    }
+
+    public Job acceptJob(Long jobId, Long providerId) {
+        Job job = repository.findById(jobId).orElseThrow(() -> new RuntimeException("Job not found"));
+
+        if (!"WAITING_FOR_PROVIDER".equals(job.getStatus())) {
+            throw new RuntimeException("Job is not available for acceptance");
         }
 
+        job.setProviderId(providerId);
+        job.setStatus("ASSIGNED");
         return repository.save(job);
     }
 

@@ -28,4 +28,14 @@ public class JobController {
     public Job updateStatus(@PathVariable Long id, @RequestParam String status) {
         return service.updateStatus(id, status);
     }
+
+    @GetMapping("/pending/{serviceType}")
+    public List<Job> getPendingJobs(@PathVariable String serviceType) {
+        return service.getPendingJobs(serviceType);
+    }
+
+    @PostMapping("/{id}/accept")
+    public Job acceptJob(@PathVariable Long id, @RequestParam Long providerId) {
+        return service.acceptJob(id, providerId);
+    }
 }

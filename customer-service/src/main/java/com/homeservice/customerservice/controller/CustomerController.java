@@ -30,6 +30,7 @@ public class CustomerController {
 
     @GetMapping("/dashboard")
     public String dashboard(Model model, Authentication authentication) {
+        // Customer specific dashboard
         List<ServiceProvider> providers = providerClient.getAllProviders();
         model.addAttribute("providers", providers);
         model.addAttribute("username", authentication.getName());
@@ -37,10 +38,13 @@ public class CustomerController {
     }
 
     @GetMapping("/book")
-    public String bookingForm(Model model) {
-        model.addAttribute("job", new Job());
-        // We could fetch services dynamically, but for now we rely on user input or
-        // pre-set types
+    public String bookingForm(
+            @org.springframework.web.bind.annotation.RequestParam(required = false) String serviceType, Model model) {
+        Job job = new Job();
+        if (serviceType != null) {
+            job.setServiceType(serviceType);
+        }
+        model.addAttribute("job", job);
         return "booking-form";
     }
 

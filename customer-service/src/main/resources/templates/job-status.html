@@ -1,62 +1,69 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
-<head>
-    <title>My Jobs - HomeService Pro</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
+<head th:replace="~{fragments :: head('My Bookings - HomeService Pro')}"></head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
-        <div class="container">
-            <a class="navbar-brand" href="#">HomeService Pro</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="/dashboard">Home</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="/my-jobs">My Jobs</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/book">Book Service</a></li>
-                </ul>
-                <form th:action="@{/logout}" method="post" class="d-flex">
-                    <button class="btn btn-light btn-sm" type="submit">Logout</button>
-                </form>
+
+    <nav th:replace="~{fragments :: navbar}"></nav>
+
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold" style="color: var(--primary-color);">My Bookings</h2>
+            <a href="/book" class="btn btn-primary shadow-sm">
+                <i class="fa-solid fa-plus me-2"></i>New Booking
+            </a>
+        </div>
+
+        <div class="premium-card p-0 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover table-custom mb-0 align-middle">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="py-3 px-4">Service</th>
+                            <th class="py-3 px-4">Description</th>
+                            <th class="py-3 px-4">Scheduled Time</th>
+                            <th class="py-3 px-4">Location</th>
+                            <th class="py-3 px-4">Status</th>
+                            <th class="py-3 px-4 text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${#lists.isEmpty(jobs)}">
+                            <td colspan="6" class="text-center py-5 text-muted">
+                                <i class="fa-regular fa-calendar-xmark fa-2x mb-2 d-block"></i>
+                                No bookings found. Start by booking a service!
+                            </td>
+                        </tr>
+
+                        <tr th:each="job : ${jobs}">
+                            <td class="px-4 fw-bold" th:text="${job.serviceType}">Plumbing</td>
+                            <td class="px-4 text-secondary small" th:text="${#strings.abbreviate(job.description, 50)}">
+                                Leak fix...</td>
+                            <td class="px-4 text-secondary"
+                                th:text="${#temporals.format(job.scheduledTime, 'MMM dd, yyyy HH:mm')}">Dec 12, 10:00
+                            </td>
+                            <td class="px-4 text-secondary" th:text="${job.location}">123 St</td>
+                            <td class="px-4">
+                                <span class="status-badge"
+                                    th:classappend="${job.status == 'COMPLETED' ? 'badge-success' : (job.status == 'ACCEPTED' ? 'badge-primary' : 'badge-warning')}"
+                                    th:text="${job.status}">PENDING</span>
+                            </td>
+                            <td class="px-4 text-end">
+                                <!-- Refresh / View Details (Placeholder) -->
+                                <button class="btn btn-sm btn-link text-secondary">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
-    </nav>
-
-    <div class="container">
-        <h2 class="mb-4">My Bookings</h2>
-        <div class="table-responsive">
-            <table class="table table-striped table-hover align-middle">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Job ID</th>
-                        <th>Service Type</th>
-                        <th>Scheduled Time</th>
-                        <th>Status</th>
-                        <th>Provider</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="job : ${jobs}">
-                        <td th:text="${job.id}">1</td>
-                        <td th:text="${job.serviceType}">Plumbing</td>
-                        <td th:text="${#temporals.format(job.scheduledTime, 'dd-MM-yyyy HH:mm')}">Date</td>
-                        <td>
-                            <span th:if="${job.status == 'PENDING'}" class="badge bg-warning text-dark">Pending</span>
-                            <span th:if="${job.status == 'ASSIGNED'}" class="badge bg-info">Assigned</span>
-                            <span th:if="${job.status == 'COMPLETED'}" class="badge bg-success">Completed</span>
-                            <span th:if="${job.status == 'WAITING_FOR_PROVIDER'}" class="badge bg-secondary">Waiting for
-                                Provider</span>
-                        </td>
-                        <td th:text="${job.providerId != null ? 'Assigned' : 'Pending'}">Provider</td>
-                    </tr>
-                    <tr th:if="${#lists.isEmpty(jobs)}">
-                        <td colspan="5" class="text-center">No bookings found. <a href="/book">Book one now!</a></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
     </div>
+
+    <footer th:replace="~{fragments :: footer}"></footer>
+
 </body>
 
 </html>
