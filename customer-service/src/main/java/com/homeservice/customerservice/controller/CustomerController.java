@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
@@ -43,13 +44,16 @@ public class CustomerController {
     }
 
     @GetMapping("/book")
-    public String bookingForm(
-            @org.springframework.web.bind.annotation.RequestParam(required = false) String serviceType, Model model) {
+    public String bookingForm(@RequestParam(required = false) String serviceType, Model model,
+            Authentication authentication) {
         Job job = new Job();
         if (serviceType != null) {
             job.setServiceType(serviceType);
         }
         model.addAttribute("job", job);
+        // Add customer address for auto-populate
+        Customer customer = customerDetailsService.getCustomerByUsername(authentication.getName());
+        model.addAttribute("customer", customer);
         return "booking-form";
     }
 

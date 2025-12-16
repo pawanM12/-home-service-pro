@@ -42,50 +42,185 @@
             <!-- Add more stats as needed -->
         </div>
 
-        <!-- Pending Jobs List -->
-        <h4 class="fw-bold mb-3 animate-fade-in" style="animation-delay: 0.2s;">Available Jobs</h4>
+        <!-- Tabs Navigation -->
+        <ul class="nav nav-pills mb-4" id="pills-tab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active fw-bold" id="pills-pending-tab" data-bs-toggle="pill"
+                    data-bs-target="#pills-pending" type="button" role="tab" aria-controls="pills-pending"
+                    aria-selected="true">
+                    New Requests <span class="badge bg-secondary ms-1" th:text="${#lists.size(pendingJobs)}">0</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold" id="pills-active-tab" data-bs-toggle="pill"
+                    data-bs-target="#pills-active" type="button" role="tab" aria-controls="pills-active"
+                    aria-selected="false">
+                    My Active Jobs <span class="badge bg-primary ms-1" th:text="${#lists.size(activeJobs)}">0</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-bold" id="pills-history-tab" data-bs-toggle="pill"
+                    data-bs-target="#pills-history" type="button" role="tab" aria-controls="pills-history"
+                    aria-selected="false">
+                    History
+                </button>
+            </li>
+        </ul>
 
-        <div class="premium-card p-0 overflow-hidden animate-fade-in" style="animation-delay: 0.3s;">
-            <div class="table-responsive">
-                <table class="table table-hover table-custom mb-0 align-middle">
-                    <thead class="bg-light">
-                        <tr>
-                            <th class="py-3 px-4">Service Type</th>
-                            <th class="py-3 px-4">Location</th>
-                            <th class="py-3 px-4">Description</th>
-                            <th class="py-3 px-4">Time</th>
-                            <th class="py-3 px-4 text-end">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:if="${#lists.isEmpty(pendingJobs)}">
-                            <td colspan="5" class="text-center py-5 text-muted">
-                                <i class="fa-solid fa-coffee fa-2x mb-2 d-block"></i>
-                                No pending jobs available at the moment.
-                            </td>
-                        </tr>
+        <div class="tab-content" id="pills-tabContent">
 
-                        <tr th:each="job : ${pendingJobs}">
-                            <td class="px-4 fw-bold" th:text="${job.serviceType}">Service</td>
-                            <td class="px-4" th:text="${job.location}">Location</td>
-                            <td class="px-4 small text-secondary" th:text="${#strings.abbreviate(job.description, 30)}">
-                                Desc</td>
-                            <td class="px-4 text-secondary"
-                                th:text="${#temporals.format(job.scheduledTime, 'dd/MM HH:mm')}">Time</td>
-                            <td class="px-4 text-end">
-                                <form th:action="@{/provider/job/{id}/accept(id=${job.id})}" method="post">
-                                    <input type="hidden" name="providerId" th:value="${provider.id}" />
-                                    <input type="hidden" name="email" th:value="${email}" />
-                                    <button type="submit" class="btn btn-sm btn-accent shadow-sm">
-                                        Accept <i class="fa-solid fa-check ms-1"></i>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <!-- Tab 1: New Requests -->
+            <div class="tab-pane fade show active" id="pills-pending" role="tabpanel"
+                aria-labelledby="pills-pending-tab">
+                <div class="premium-card p-0 overflow-hidden">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-custom mb-0 align-middle">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="py-3 px-4">Job #</th>
+                                    <th class="py-3 px-4">Service</th>
+                                    <th class="py-3 px-4">Location</th>
+                                    <th class="py-3 px-4">Description</th>
+                                    <th class="py-3 px-4">Time</th>
+                                    <th class="py-3 px-4 text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${#lists.isEmpty(pendingJobs)}">
+                                    <td colspan="6" class="text-center py-5 text-muted">No pending jobs.</td>
+                                </tr>
+                                <tr th:each="job : ${pendingJobs}">
+                                    <td class="px-4 fw-bold text-muted" th:text="${'#' + job.id}">#1</td>
+                                    <td class="px-4 fw-bold" th:text="${job.serviceType}">Service</td>
+                                    <td class="px-4" th:text="${job.location}">Location</td>
+                                    <td class="px-4 small text-secondary"
+                                        th:text="${#strings.abbreviate(job.description, 30)}">Desc</td>
+                                    <td class="px-4 text-secondary"
+                                        th:text="${#temporals.format(job.scheduledTime, 'dd/MM HH:mm')}">Time</td>
+                                    <td class="px-4 text-end">
+                                        <form th:action="@{/provider/job/{id}/accept(id=${job.id})}" method="post">
+                                            <input type="hidden" name="providerId" th:value="${provider.id}" />
+                                            <input type="hidden" name="email" th:value="${email}" />
+                                            <button type="submit" class="btn btn-sm btn-accent shadow-sm">
+                                                Accept <i class="fa-solid fa-check ms-1"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Active Jobs -->
+            <div class="tab-pane fade" id="pills-active" role="tabpanel" aria-labelledby="pills-active-tab">
+                <div class="premium-card p-0 overflow-hidden">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-custom mb-0 align-middle">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="py-3 px-4">Job #</th>
+                                    <th class="py-3 px-4">Service</th>
+                                    <th class="py-3 px-4">Location</th>
+                                    <th class="py-3 px-4">Time</th>
+                                    <th class="py-3 px-4 text-center">Status</th>
+                                    <th class="py-3 px-4 text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${#lists.isEmpty(activeJobs)}">
+                                    <td colspan="6" class="text-center py-5 text-muted">No active jobs.</td>
+                                </tr>
+                                <tr th:each="job : ${activeJobs}">
+                                    <td class="px-4 fw-bold text-muted" th:text="${'#' + job.id}">#1</td>
+                                    <td class="px-4 fw-bold" th:text="${job.serviceType}">Service</td>
+                                    <td class="px-4" th:text="${job.location}">Location</td>
+                                    <td class="px-4 text-secondary"
+                                        th:text="${#temporals.format(job.scheduledTime, 'dd/MM HH:mm')}">Time</td>
+                                    <td class="px-4 text-center">
+                                        <span class="badge bg-primary">IN PROGRESS</span>
+                                    </td>
+                                    <td class="px-4 text-end">
+                                        <!-- Complete Button triggers Modal -->
+                                        <button type="button" class="btn btn-sm btn-success shadow-sm"
+                                            data-bs-toggle="modal" th:data-bs-target="'#completeModal' + ${job.id}">
+                                            Complete <i class="fa-solid fa-check-double ms-1"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: History -->
+            <div class="tab-pane fade" id="pills-history" role="tabpanel" aria-labelledby="pills-history-tab">
+                <div class="premium-card p-0 overflow-hidden">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-custom mb-0 align-middle">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="py-3 px-4">Job #</th>
+                                    <th class="py-3 px-4">Service</th>
+                                    <th class="py-3 px-4">Time</th>
+                                    <th class="py-3 px-4 text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${#lists.isEmpty(historyJobs)}">
+                                    <td colspan="4" class="text-center py-5 text-muted">No past jobs.</td>
+                                </tr>
+                                <tr th:each="job : ${historyJobs}">
+                                    <td class="px-4 fw-bold text-muted" th:text="${'#' + job.id}">#1</td>
+                                    <td class="px-4 fw-bold" th:text="${job.serviceType}">Service</td>
+                                    <td class="px-4 text-secondary"
+                                        th:text="${#temporals.format(job.scheduledTime, 'dd/MM HH:mm')}">Time</td>
+                                    <td class="px-4 text-center">
+                                        <span class="badge"
+                                            th:classappend="${job.status == 'COMPLETED' ? 'bg-success' : 'bg-danger'}"
+                                            th:text="${job.status}">COMPLETED</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modals Outside Table (Prevent Overflow Issues) -->
+    <div th:each="job : ${activeJobs}">
+        <div class="modal fade" th:id="'completeModal' + ${job.id}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title fw-bold">Complete Job #<span th:text="${job.id}"></span></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form th:action="@{/provider/job/{id}/complete(id=${job.id})}" method="post">
+                        <div class="modal-body text-start">
+                            <p class="text-secondary mb-3">Ask the customer for their 4-digit OTP code to verify
+                                completion.</p>
+                            <input type="hidden" name="email" th:value="${email}" />
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control" name="otp" placeholder="1234" required
+                                    pattern="\d{4}" maxlength="4">
+                                <label>Enter 4-Digit OTP</label>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-success">Verify & Complete</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
+    </div>
     </div>
 
     <footer th:replace="~{fragments :: footer}"></footer>

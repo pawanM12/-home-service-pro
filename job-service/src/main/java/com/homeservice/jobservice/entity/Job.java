@@ -16,6 +16,7 @@ public class Job {
     private String serviceType;
     private String status; // BOOKED, ASSIGNED, COMPLETED
     private LocalDateTime scheduledTime;
+    private String completionOtp; // 4-digit secure code
 
     public Long getId() {
         return id;
@@ -82,5 +83,13 @@ public class Job {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getCompletionOtp() {
+        return completionOtp;
+    }
+
+    public void setCompletionOtp(String completionOtp) {
+        this.completionOtp = completionOtp;
     }
 }

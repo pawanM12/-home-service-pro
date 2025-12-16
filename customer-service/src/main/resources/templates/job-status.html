@@ -20,6 +20,7 @@
                 <table class="table table-hover table-custom mb-0 align-middle">
                     <thead class="bg-light">
                         <tr>
+                            <th class="py-3 px-4">Job #</th>
                             <th class="py-3 px-4">Service</th>
                             <th class="py-3 px-4">Description</th>
                             <th class="py-3 px-4">Scheduled Time</th>
@@ -30,13 +31,14 @@
                     </thead>
                     <tbody>
                         <tr th:if="${#lists.isEmpty(jobs)}">
-                            <td colspan="6" class="text-center py-5 text-muted">
+                            <td colspan="7" class="text-center py-5 text-muted">
                                 <i class="fa-regular fa-calendar-xmark fa-2x mb-2 d-block"></i>
                                 No bookings found. Start by booking a service!
                             </td>
                         </tr>
 
                         <tr th:each="job : ${jobs}">
+                            <td class="px-4 fw-bold text-muted" th:text="${'#' + job.id}">#1</td>
                             <td class="px-4 fw-bold" th:text="${job.serviceType}">Plumbing</td>
                             <td class="px-4 text-secondary small" th:text="${#strings.abbreviate(job.description, 50)}">
                                 Leak fix...</td>
@@ -50,10 +52,12 @@
                                     th:text="${job.status}">PENDING</span>
                             </td>
                             <td class="px-4 text-end">
-                                <!-- Refresh / View Details (Placeholder) -->
-                                <button class="btn btn-sm btn-link text-secondary">
-                                    <i class="fa-solid fa-chevron-right"></i>
-                                </button>
+                                <!-- OTP Display -->
+                                <div th:if="${job.status == 'ASSIGNED' || job.status == 'IN_PROGRESS'}" class="mb-2">
+                                    <small class="text-secondary d-block" style="font-size: 0.75rem;">OTP Code:</small>
+                                    <span class="badge bg-dark text-warning font-monospace" style="letter-spacing: 2px;"
+                                        th:text="${job.completionOtp}">----</span>
+                                </div>
                             </td>
                         </tr>
                     </tbody>

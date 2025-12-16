@@ -63,8 +63,21 @@ public class ProviderWebController {
         // demo
         model.addAttribute("email", email);
 
+        model.addAttribute("email", email);
+
         List<Job> pendingJobs = jobClient.getPendingJobs(provider.getSpecialization());
         model.addAttribute("pendingJobs", pendingJobs);
+
+        List<Job> allMyJobs = jobClient.getJobsByProvider(provider.getId());
+        List<Job> activeJobs = allMyJobs.stream()
+                .filter(j -> "ASSIGNED".equals(j.getStatus()) || "IN_PROGRESS".equals(j.getStatus()))
+                .toList();
+        List<Job> historyJobs = allMyJobs.stream()
+                .filter(j -> "COMPLETED".equals(j.getStatus()) || "CANCELLED".equals(j.getStatus()))
+                .toList();
+
+        model.addAttribute("activeJobs", activeJobs);
+        model.addAttribute("historyJobs", historyJobs);
 
         return "provider-dashboard";
     }
@@ -72,6 +85,12 @@ public class ProviderWebController {
     @PostMapping("/job/{id}/accept")
     public String acceptJob(@PathVariable Long id, @RequestParam Long providerId, @RequestParam String email) {
         jobClient.acceptJob(id, providerId);
+        return "redirect:/provider/dashboard?email=" + email;
+    }
+
+    @PostMapping("/job/{id}/complete")
+    public String completeJob(@PathVariable Long id, @RequestParam String otp, @RequestParam String email) {
+        jobClient.completeJob(id, otp);
         return "redirect:/provider/dashboard?email=" + email;
     }
 }

@@ -38,4 +38,14 @@ public class JobController {
     public Job acceptJob(@PathVariable Long id, @RequestParam Long providerId) {
         return service.acceptJob(id, providerId);
     }
+
+    @PostMapping("/{id}/complete")
+    public Job completeJob(@PathVariable Long id, @RequestParam String otp) {
+        return service.completeJob(id, otp);
+    }
+
+    @GetMapping("/provider/{providerId}")
+    public List<Job> getJobsByProvider(@PathVariable Long providerId) {
+        return service.getJobsByProvider(providerId);
+    }
 }

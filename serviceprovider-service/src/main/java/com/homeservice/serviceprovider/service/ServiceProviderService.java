@@ -34,7 +34,18 @@ public class ServiceProviderService {
                 .orElse(null);
     }
 
+    @Autowired
+    private com.homeservice.serviceprovider.client.JobClient jobClient;
+
     public ServiceProvider getProviderByEmail(String email) {
         return repository.findByEmail(email).orElse(null);
+    }
+
+    public void completeJob(Long jobId, String otp) {
+        jobClient.completeJob(jobId, otp);
+    }
+
+    public List<com.homeservice.serviceprovider.model.Job> getJobsByProvider(Long providerId) {
+        return jobClient.getJobsByProvider(providerId);
     }
 }

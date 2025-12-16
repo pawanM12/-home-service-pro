@@ -25,8 +25,12 @@ public class AuthController {
 
     @PostMapping("/register")
     public String registerUser(@RequestParam String username, @RequestParam String password,
-            @RequestParam String email) {
-        customerDetailsService.registerCustomer(username, password, email);
+            @RequestParam String email,
+            @RequestParam String street,
+            @RequestParam String city,
+            @RequestParam String state,
+            @RequestParam String zipCode) {
+        customerDetailsService.registerCustomer(username, password, email, street, city, state, zipCode);
         return "redirect:/login";
     }
 }

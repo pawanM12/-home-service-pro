@@ -59,11 +59,16 @@ public class CustomerDetailsService implements UserDetailsService {
         throw new UsernameNotFoundException("User not found");
     }
 
-    public void registerCustomer(String username, String password, String email) {
+    public void registerCustomer(String username, String password, String email, String street, String city,
+            String state, String zipCode) {
         Customer customer = new Customer();
         customer.setUsername(username);
         customer.setPassword(passwordEncoder.encode(password));
         customer.setEmail(email);
+        customer.setStreet(street);
+        customer.setCity(city);
+        customer.setState(state);
+        customer.setZipCode(zipCode);
         repository.save(customer);
     }
 

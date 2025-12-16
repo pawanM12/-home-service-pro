@@ -75,4 +75,14 @@ public class Job {
     public void setLocation(String location) {
         this.location = location;
     }
+
+    private String completionOtp;
+
+    public String getCompletionOtp() {
+        return completionOtp;
+    }
+
+    public void setCompletionOtp(String completionOtp) {
+        this.completionOtp = completionOtp;
+    }
 }

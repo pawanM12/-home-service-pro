@@ -13,10 +13,18 @@ public class JobService {
     private JobRepository repository;
 
     public Job bookJob(Job job) {
+        // Validation: Past Date
+        // if (job.getScheduledTime() != null &&
+        // job.getScheduledTime().isBefore(java.time.LocalDateTime.now())) {
+        // throw new IllegalArgumentException("Cannot book a job in the past.");
+        // }
+
+        // Generate 4-digit OTP
+        String otp = String.format("%04d", new java.util.Random().nextInt(10000));
+        job.setCompletionOtp(otp);
+
         // Initial status is waiting for a provider to accept
         job.setStatus("WAITING_FOR_PROVIDER");
-
-        // We no longer auto-assign. Providers must accept the job.
 
         return repository.save(job);
     }
@@ -32,6 +40,8 @@ public class JobService {
             throw new RuntimeException("Job is not available for acceptance");
         }
 
+        // TODO: Add conflict check here (future enhancement)
+
         job.setProviderId(providerId);
         job.setStatus("ASSIGNED");
         return repository.save(job);
@@ -41,6 +51,26 @@ public class JobService {
         return repository.findByCustomerId(customerId);
     }
 
+    public List<Job> getJobsByProvider(Long providerId) {
+        return repository.findByProviderId(providerId);
+    }
+
+    public Job completeJob(Long id, String otp) {
+        Job job = repository.findById(id).orElseThrow(() -> new RuntimeException("Job not found"));
+
+        if (!"ASSIGNED".equals(job.getStatus()) && !"IN_PROGRESS".equals(job.getStatus())) {
+            throw new RuntimeException("Job is not in a valid state to be completed.");
+        }
+
+        if (job.getCompletionOtp() == null || !job.getCompletionOtp().equals(otp)) {
+            throw new IllegalArgumentException("Invalid OTP. Please ask customer for the correct code.");
+        }
+
+        job.setStatus("COMPLETED");
+        return repository.save(job);
+    }
+
+    // Deprecated: Use specific lifecycle methods
     public Job updateStatus(Long id, String status) {
         Job job = repository.findById(id).orElseThrow(() -> new RuntimeException("Job not found"));
         job.setStatus(status);

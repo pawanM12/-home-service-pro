@@ -17,4 +17,10 @@ public interface JobClient {
 
     @PostMapping("/api/jobs/{id}/accept")
     void acceptJob(@PathVariable("id") Long id, @RequestParam("providerId") Long providerId);
+
+    @GetMapping("/api/jobs/provider/{providerId}")
+    List<Job> getJobsByProvider(@PathVariable("providerId") Long providerId);
+
+    @PostMapping("/api/jobs/{id}/complete")
+    void completeJob(@PathVariable("id") Long id, @RequestParam("otp") String otp);
 }
