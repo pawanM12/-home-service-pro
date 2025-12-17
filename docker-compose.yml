@@ -5,6 +5,13 @@ services:
       - "8888:8888"
     volumes:
       - ./config-repo:/config-repo
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
 
   eureka-server:
     build: ./eureka-server
@@ -13,42 +20,67 @@ services:
     environment:
       - EUREKA_CLIENT_REGISTER_WITH_EUREKA=false
       - EUREKA_CLIENT_FETCH_REGISTRY=false
+    restart: on-failure
     depends_on:
-      - config-server
+      config-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
 
   serviceprovider-service:
     build: ./serviceprovider-service
     ports:
       - "8081:8081"
+    restart: on-failure
     depends_on:
-      - eureka-server
-      - config-server
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
 
   job-service:
     build: ./job-service
     ports:
       - "8082:8082"
+    restart: on-failure
     depends_on:
-      - eureka-server
-      - config-server
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
 
   customer-service:
     build: ./customer-service
     ports:
       - "8090:8080"
+    restart: on-failure
     depends_on:
-      - eureka-server
-      - config-server
-      - job-service
-      - serviceprovider-service
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      job-service:
+        condition: service_started
+      serviceprovider-service:
+        condition: service_started
 
   gateway-service:
     build: ./gateway-service
     ports:
       - "8080:8080"
+    restart: on-failure
     depends_on:
-      - eureka-server
-      - config-server
-      - customer-service
-      - job-service
-      - serviceprovider-service
+      eureka-server:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      customer-service:
+        condition: service_started
+      job-service:
+        condition: service_started
+      serviceprovider-service:
+        condition: service_started

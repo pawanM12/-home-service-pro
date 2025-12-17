@@ -1,40 +1,31 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# 1. Clean Docker images and caches
+# 1. Clean Docker system (Optional, but good for a fresh start)
 echo "Pruning Docker system..."
 docker system prune -af
 
-# 2. Build all services
-services=(config-server gateway-service customer-service job-service serviceprovider-service)
+# 2. Build all services using Maven
+# We build locally first to ensure the artifacts are ready for the docker build context
+services=(config-server gateway-service customer-service job-service serviceprovider-service eureka-server)
 for svc in "${services[@]}"; do
   echo "Building $svc..."
   (cd "$svc" && mvn clean package -DskipTests)
-  docker build -t home-service-pro-${svc}:latest "./${svc}"
 done
 
-# 3. Delete existing K8s resources (ignore errors if not present)
-kubectl delete deployment,svc -l app=config-server || true
-kubectl delete deployment,svc -l app=gateway-service || true
-kubectl delete deployment,svc -l app=customer-service || true
-kubectl delete deployment,svc -l app=job-service || true
-kubectl delete deployment,svc -l app=serviceprovider-service || true
-kubectl delete deployment,svc -l app=eureka-server || true
-kubectl delete configmap config-repo || true
+# 3. Start services using Docker Compose
+echo "Starting services with Docker Compose..."
+# --build ensures we pick up the changes we just built (though the dockerfile likely copies the jar)
+docker compose up -d --build
 
-# 4. Re‑apply ConfigMap and deployments
-# Note: Using platform.yaml (Config+Eureka), services.yaml (Biz Services), and gateway.yaml
-kubectl apply -f k8s/configmap.yaml
-kubectl apply -f k8s/platform.yaml
+echo "Waiting for services to initialize..."
+# Simple wait to let things spin up
+sleep 10
 
-# Wait for Config Server to be ready
-echo "Waiting for Config Server to be ready..."
-until kubectl get pod -l app=config-server -o jsonpath='{.items[0].status.phase}' | grep -q Running; do 
-  echo "Waiting for config-server..."
-  sleep 5
-done
+echo "Checking running containers..."
+docker compose ps
 
-kubectl apply -f k8s/services.yaml
-kubectl apply -f k8s/gateway.yaml
-
-echo "All services redeployed. Use 'kubectl port-forward svc/gateway-service 8080:8080' to access the UI."
+echo "All services redeployed."
+echo "Eureka Dashboard: http://localhost:8761"
+echo "Gateway: http://localhost:8080"
+echo "To view logs: docker compose logs -f"
