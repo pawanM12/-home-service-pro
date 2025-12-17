@@ -89,8 +89,14 @@ public class ProviderWebController {
     }
 
     @PostMapping("/job/{id}/complete")
-    public String completeJob(@PathVariable Long id, @RequestParam String otp, @RequestParam String email) {
-        jobClient.completeJob(id, otp);
+    public String completeJob(@PathVariable Long id, @RequestParam String otp, @RequestParam String email,
+            org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
+        try {
+            jobClient.completeJob(id, otp);
+            redirectAttributes.addFlashAttribute("success", "Job verified and completed!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Invalid OTP. Please try again.");
+        }
         return "redirect:/provider/dashboard?email=" + email;
     }
 }

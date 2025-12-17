@@ -50,10 +50,19 @@ public class CustomerController {
         if (serviceType != null) {
             job.setServiceType(serviceType);
         }
-        model.addAttribute("job", job);
+
         // Add customer address for auto-populate
         Customer customer = customerDetailsService.getCustomerByUsername(authentication.getName());
         model.addAttribute("customer", customer);
+
+        // Pre-fill location
+        if (customer != null) {
+            String address = String.format("%s, %s, %s %s",
+                    customer.getStreet(), customer.getCity(), customer.getState(), customer.getZipCode());
+            job.setLocation(address);
+        }
+
+        model.addAttribute("job", job);
         return "booking-form";
     }
 
